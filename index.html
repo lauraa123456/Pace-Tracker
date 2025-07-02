@@ -8,6 +8,7 @@
     body {
       font-family: Arial, sans-serif;
       background: #f4f4f4;
+      color: #000000;
       margin: 0;
       padding: 20px;
       display: flex;
@@ -16,6 +17,7 @@
       justify-content: center;
       height: 100vh;
     }
+
     .screen {
       display: none;
       flex-direction: column;
@@ -28,6 +30,17 @@
       font-size: 1.5rem;
       margin: 10px;
       padding: 10px 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    input {
+      background-color: #ffffff;
+      color: #000000;
+    }
+    button {
+      background-color: #dddddd;
+      color: #000000;
+      cursor: pointer;
     }
     h1 {
       font-size: 3rem;
@@ -46,11 +59,11 @@
     <h1>Set Up</h1>
     <label>
       Time per part (seconds):<br/>
-      <input id="timePerPart" type="number" min="1" />
+      <input id="timePerCycle" type="number" min="1" />
     </label>
     <label>
-      Total parts to assemble:<br/>
-      <input id="totalParts" type="number" min="1" />
+      Number of cycles:<br/>
+      <input id="totalCycles" type="number" min="1" />
     </label>
     <button onclick="startTracker()">Start</button>
   </div>
@@ -58,7 +71,7 @@
   <div id="trackerScreen" class="screen">
     <h1 id="elapsed">00:00</h1>
     <div class="sub">
-      Expected Parts: <span id="expectedParts">0</span>
+      Expected Cycles: <span id="expectedCycles">0</span>
     </div>
     <div class="controls">
       <button onclick="stopTracker()">Stop</button>
@@ -67,16 +80,16 @@
   </div>
 
   <script>
-    let timePerPart = 0;
-    let totalParts = 0;
+    let timePerCycle = 0;
+    let totalCycles = 0;
     let startTime = null;
     let timerInterval = null;
 
     function startTracker() {
-      timePerPart = parseFloat(document.getElementById("timePerPart").value);
-      totalParts = parseInt(document.getElementById("totalParts").value);
+      timePerCycle = parseFloat(document.getElementById("timePerCycle").value);
+      totalCycles = parseInt(document.getElementById("totalCycles").value);
 
-      if (!timePerPart || !totalParts) {
+      if (!timePerCycle || !totalCycles) {
         alert("Please enter valid numbers for both fields.");
         return;
       }
@@ -96,8 +109,8 @@
       const seconds = String(elapsedSeconds % 60).padStart(2, '0');
       document.getElementById("elapsed").innerText = `${minutes}:${seconds}`;
 
-      const expected = Math.floor(elapsedSeconds / timePerPart);
-      document.getElementById("expectedParts").innerText = expected;
+      const expected = Math.floor(elapsedSeconds / timePerCycle);
+      document.getElementById("expectedCycles").innerText = expected;
     }
 
     function stopTracker() {
@@ -109,7 +122,7 @@
       document.getElementById("trackerScreen").classList.remove("active");
       document.getElementById("setupScreen").classList.add("active");
       document.getElementById("elapsed").innerText = "00:00";
-      document.getElementById("expectedParts").innerText = "0";
+      document.getElementById("expectedCycles").innerText = "0";
     }
   </script>
 </body>
