@@ -65,7 +65,7 @@
       Number of cycles:<br/>
       <input id="totalCycles" type="number" min="1" />
     </label>
-    <button onclick="startTracker()">Start</button>
+    <button onclick="startTracker(true)">Start</button>
   </div>
 
   <div id="trackerScreen" class="screen">
@@ -74,6 +74,7 @@
       Expected Cycles: <span id="expectedCycles">0</span>
     </div>
     <div class="controls">
+      <button onclick="startTracker(false)">Start</button>
       <button onclick="stopTracker()">Stop</button>
       <button onclick="resetTracker()">Reset</button>
     </div>
@@ -83,21 +84,32 @@
     let timePerCycle = 0;
     let totalCycles = 0;
     let startTime = null;
+    let elapsedBeforePause = 0;
     let timerInterval = null;
 
-    function startTracker() {
-      timePerCycle = parseFloat(document.getElementById("timePerCycle").value);
-      totalCycles = parseInt(document.getElementById("totalCycles").value);
+    function startTracker(isInitial) {
+      const startButton = document.querySelector('#trackerScreen .controls button[onclick*="startTracker"]');
+      startButton.disabled = true;
 
-      if (!timePerCycle || !totalCycles) {
-        alert("Please enter valid numbers for both fields.");
-        return;
+      if (isInitial) {
+        timePerCycle = parseFloat(document.getElementById("timePerCycle").value);
+        totalCycles = parseInt(document.getElementById("totalCycles").value);
+
+        if (!timePerCycle || !totalCycles) {
+          alert("Please enter valid numbers for both fields.");
+          startButton.disabled = false;
+          return;
+        }
+
+        document.getElementById("setupScreen").classList.remove("active");
+        document.getElementById("trackerScreen").classList.add("active");
+
+        startTime = Date.now();
+        elapsedBeforePause = 0;
+      } else {
+        startTime = Date.now() - elapsedBeforePause;
       }
 
-      document.getElementById("setupScreen").classList.remove("active");
-      document.getElementById("trackerScreen").classList.add("active");
-
-      startTime = Date.now();
       updateTimer();
       timerInterval = setInterval(updateTimer, 1000);
     }
@@ -105,6 +117,8 @@
     function updateTimer() {
       const now = Date.now();
       const elapsedSeconds = Math.floor((now - startTime) / 1000);
+      elapsedBeforePause = now - startTime;
+
       const minutes = String(Math.floor(elapsedSeconds / 60)).padStart(2, '0');
       const seconds = String(elapsedSeconds % 60).padStart(2, '0');
       document.getElementById("elapsed").innerText = `${minutes}:${seconds}`;
@@ -115,14 +129,19 @@
 
     function stopTracker() {
       clearInterval(timerInterval);
+      const startButton = document.querySelector('#trackerScreen .controls button[onclick*="startTracker"]');
+      startButton.disabled = false;
     }
 
     function resetTracker() {
       clearInterval(timerInterval);
+      elapsedBeforePause = 0;
       document.getElementById("trackerScreen").classList.remove("active");
       document.getElementById("setupScreen").classList.add("active");
       document.getElementById("elapsed").innerText = "00:00";
       document.getElementById("expectedCycles").innerText = "0";
+      const startButton = document.querySelector('#trackerScreen .controls button[onclick*="startTracker"]');
+      startButton.disabled = false;
     }
   </script>
 </body>
